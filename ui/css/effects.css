@@ -1,0 +1,99 @@
+/* Dispersion: light splits as in a prism — pink and cyan copies drift aside from the yellow (or white) core.
+   The copies lie under the text (z-index −1 inside their layer), so the core stays clean. --d is the spread;
+   when a value changes it flashes and converges (.burst). */
+.disp {
+  --d: 2px;
+  --dc1: var(--pink);
+  --dc2: var(--cyan);
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  color: var(--yellow);
+  white-space: nowrap;
+}
+.disp::before,
+.disp::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.disp::before { color: var(--dc1); transform: translateX(calc(var(--d) * -1)); }
+.disp::after { color: var(--dc2); transform: translateX(var(--d)); }
+.disp.idle { animation: disp-idle 6s infinite; }
+.disp.idle::before { animation: slice-a 6s infinite; }
+.disp.idle::after { animation: slice-b 6s infinite; }
+.disp.burst { animation: disp-burst .7s cubic-bezier(.2, .8, .2, 1); }
+
+@keyframes disp-burst {
+  0% { --d: 16px; filter: blur(.6px); }
+  35% { --d: 6px; }
+  100% { --d: 2px; filter: none; }
+}
+/* a rare glitch: the copies tear into stripes and come back */
+@keyframes disp-idle {
+  0%, 90%, 100% { --d: 2px; }
+  92% { --d: 7px; }
+  94% { --d: -3px; }
+  96% { --d: 4px; }
+}
+@keyframes slice-a {
+  0%, 90%, 97%, 100% { clip-path: inset(0 0 0 0); }
+  92% { clip-path: inset(12% 0 55% 0); }
+  94% { clip-path: inset(60% 0 8% 0); }
+}
+@keyframes slice-b {
+  0%, 90%, 97%, 100% { clip-path: inset(0 0 0 0); }
+  92% { clip-path: inset(50% 0 20% 0); }
+  95% { clip-path: inset(5% 0 70% 0); }
+}
+
+/* prism sweep over the file panel on selection or completion */
+.prism {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: linear-gradient(105deg,
+    transparent 38%,
+    rgba(255, 42, 109, .32) 44%,
+    rgba(5, 217, 232, .32) 50%,
+    rgba(252, 238, 10, .32) 56%,
+    transparent 62%) no-repeat;
+  background-size: 260% 100%;
+}
+.prism.go { animation: prism-sweep .85s ease-out; }
+@keyframes prism-sweep {
+  0% { opacity: 1; background-position: 120% 0; }
+  100% { opacity: 1; background-position: -60% 0; }
+}
+
+/* dropping files onto the window */
+#dropOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  display: none;
+  place-items: center;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(45deg, rgba(252, 238, 10, .06) 0 14px, transparent 14px 28px),
+    rgba(5, 6, 14, .72);
+}
+body.dragging #dropOverlay { display: grid; }
+.drop-inner {
+  font: 700 34px/1 var(--wide);
+  letter-spacing: .24em;
+  padding: 30px 46px;
+  border: 2px solid var(--yellow);
+  clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+  animation: disp-idle 1.2s infinite;
+}
+
+/* blinking cursor of a running job */
+.blink { animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: .2; } }

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VideoSqueeze</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/frame.css">
+<link rel="stylesheet" href="css/controls.css">
+<link rel="stylesheet" href="css/effects.css">
+<link rel="stylesheet" href="css/splash.css">
+</head>
+<body>
+
+<div id="frame" class="splash" data-tauri-drag-region>
+  <div class="sp-head">
+    <div class="tb-logo sp-chip">
+      <svg viewBox="0 0 30 20"><g class="lp"><polyline points="2,5 7,10 2,15"/><polygon points="11,4 11,16 19,10"/><polyline points="28,5 23,10 28,15"/></g><g class="lc"><polyline points="2,5 7,10 2,15"/><polygon points="11,4 11,16 19,10"/><polyline points="28,5 23,10 28,15"/></g><g><polyline points="2,5 7,10 2,15"/><polygon points="11,4 11,16 19,10"/><polyline points="28,5 23,10 28,15"/></g></svg>
+    </div>
+    <div class="sp-titles">
+      <div class="disp idle sp-name" data-text="VIDEOSQUEEZE">VIDEOSQUEEZE</div>
+      <div class="sp-sub">COMPRESS · CONVERT</div>
+    </div>
+    <div class="tb-deco sp-deco"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+
+  <div class="sp-log" id="spLog"></div>
+
+  <div class="sp-foot">
+    <div class="cprog big active" id="spProg"><div class="fill"></div></div>
+    <div class="sp-row">
+      <span class="sp-step" id="spStep">STARTING</span>
+      <span class="sp-pct" id="spPct">0%</span>
+      <span class="sp-ver">V1.0.0</span>
+    </div>
+  </div>
+  <div class="prism" id="prism"></div>
+</div>
+
+<svg id="edge" aria-hidden="true">
+  <polygon class="e-glow"/>
+  <polygon class="e-p"/>
+  <polygon class="e-c"/>
+  <polygon class="e-y"/>
+  <polyline class="acc-p" id="accP"/>
+  <polyline class="acc-c" id="accC"/>
+  <polyline class="acc-y" id="accY"/>
+</svg>
+
+<script type="module" src="js/splash.js"></script>
+</body>
+</html>

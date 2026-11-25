@@ -1,0 +1,335 @@
+/* Buttons, fields and drop-down lists of custom shape. The edge is the element's own background, the inside —
+   ::before with the same outline shrunk by the edge width; on bevels the inner cut is 0.6 px smaller so the
+   edge doesn't get thicker. */
+
+/* ── button with bevelled corners ──────────────────── */
+.cbtn {
+  --edge: var(--cyan-dim);
+  --fill: rgba(9, 11, 26, .92);
+  --ink: var(--text);
+  --cut: 11px;
+  --bw: 1.5px;
+  position: relative;
+  height: 34px;
+  padding: 0 18px;
+  color: var(--ink);
+  background: var(--edge);
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
+  font: 600 13px/1 var(--wide);
+  letter-spacing: .16em;
+  white-space: nowrap;
+  transition: transform .06s;
+}
+.cbtn::before {
+  content: "";
+  position: absolute;
+  inset: var(--bw);
+  background: var(--fill);
+  clip-path: polygon(0 0, calc(100% - var(--cut) + .6px) 0, 100% calc(var(--cut) - .6px), 100% 100%, calc(var(--cut) - .6px) 100%, 0 calc(100% - var(--cut) + .6px));
+  transition: background .12s;
+}
+/* tick at the bottom left */
+.cbtn::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--cut) + 4px);
+  bottom: 3px;
+  width: 14px;
+  height: 2px;
+  background: var(--edge);
+  opacity: .9;
+}
+.cbtn > span { position: relative; z-index: 1; display: inline-block; }
+.cbtn:hover::before { background: color-mix(in srgb, var(--edge) 22%, var(--bg1)); }
+.cbtn:hover > span { text-shadow: -1.5px 0 var(--pink), 1.5px 0 var(--cyan); animation: jitter .32s steps(2) 1; }
+.cbtn:active { transform: translate(1px, 1px); }
+.cbtn:focus-visible { outline: 1px dashed var(--yellow); outline-offset: 2px; }
+.cbtn:disabled { opacity: .32; pointer-events: none; }
+
+.cbtn.y { --edge: var(--yellow); --ink: var(--yellow); }
+.cbtn.c { --edge: var(--cyan); --ink: var(--cyan); }
+.cbtn.p { --edge: var(--pink); --ink: var(--pink); }
+.cbtn.y:hover::before, .cbtn.c:hover::before, .cbtn.p:hover::before { background: var(--edge); }
+.cbtn.y:hover > span, .cbtn.c:hover > span, .cbtn.p:hover > span { color: var(--bg1); }
+.cbtn.p:hover > span { color: #fff; text-shadow: -1.5px 0 var(--yellow), 1.5px 0 var(--cyan); }
+
+/* arrow: notch on the left, point on the right */
+.cbtn.arrow {
+  padding: 0 26px 0 24px;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%, 11px 50%);
+}
+.cbtn.arrow::before {
+  clip-path: polygon(0 0, calc(100% - 13.4px) 0, 100% 50%, calc(100% - 13.4px) 100%, 0 100%, 10.4px 50%);
+}
+.cbtn.arrow::after { left: auto; right: 22px; width: 10px; }
+
+@keyframes jitter {
+  0% { transform: translate(0, 0); }
+  33% { transform: translate(-1px, .5px); }
+  66% { transform: translate(1px, -.5px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ── number field ──────────────────────────────────── */
+.cfield {
+  --cut: 8px;
+  position: relative;
+  display: inline-block;
+  width: 64px;
+  height: 32px;
+  background: var(--cyan-dim);
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+}
+.cfield::before {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  background: rgba(5, 6, 14, .95);
+  clip-path: polygon(calc(var(--cut) - .6px) 0, 100% 0, 100% calc(100% - var(--cut) + .6px), calc(100% - var(--cut) + .6px) 100%, 0 100%, 0 calc(var(--cut) - .6px));
+}
+.cfield:focus-within { background: var(--yellow); }
+.cfield input {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  text-align: center;
+  color: var(--yellow);
+  font: 600 15px/1 var(--wide);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .06em;
+  cursor: text;
+}
+.cfield input::-webkit-outer-spin-button, .cfield input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.cfield.bad { background: var(--pink); }
+
+/* ── drop-down list ────────────────────────────────── */
+.cselect {
+  position: relative;
+  height: 32px;
+  min-width: 150px;
+  cursor: pointer;
+  outline: none;
+  background: var(--cyan-dim);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+.cselect::before {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  background: rgba(5, 6, 14, .95);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9.4px), calc(100% - 9.4px) 100%, 0 100%);
+}
+.cselect:hover, .cselect:focus-visible, .cselect.open { background: var(--cyan); }
+.cs-face {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 40px 0 12px;
+  font: 600 13px/1 var(--wide);
+  letter-spacing: .1em;
+  white-space: nowrap;
+}
+.cs-face::before { content: ""; width: 4px; height: 14px; background: var(--yellow); clip-path: polygon(0 0, 100% 3px, 100% 100%, 0 calc(100% - 3px)); }
+.cs-arrow {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 30px;
+  height: 100%;
+  background: rgba(5, 217, 232, .14);
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+.cs-arrow::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 12px;
+  border: 5px solid transparent;
+  border-top: 7px solid var(--yellow);
+  transition: transform .15s;
+  transform-origin: 50% 25%;
+}
+.cselect.open .cs-arrow::after { transform: rotate(180deg) translateY(-2px); }
+
+.cs-menu {
+  position: fixed;
+  z-index: 500;
+  display: none;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .6));
+}
+.cs-menu.open { display: block; animation: menu-in .2s ease-out; }
+.cs-shape {
+  padding: 2px;
+  background: var(--cyan);
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+.cs-list {
+  background: rgba(7, 8, 18, .98);
+  clip-path: polygon(11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%, 0 11px);
+  padding: 8px 0;
+}
+.cs-opt {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  padding: 0 22px 0 14px;
+  font: 600 13px/1 var(--wide);
+  letter-spacing: .1em;
+  color: var(--muted);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.cs-mark { width: 8px; height: 8px; border: 1px solid var(--faint); transform: rotate(45deg); flex: none; }
+.cs-opt.hot { color: var(--text); background: linear-gradient(90deg, rgba(5, 217, 232, .25), transparent); }
+.cs-opt.hot::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 3px; background: var(--cyan); }
+.cs-opt.on { color: var(--yellow); }
+.cs-opt.on .cs-mark { background: var(--yellow); border-color: var(--yellow); box-shadow: -2px 0 0 var(--pink), 2px 0 0 var(--cyan); }
+@keyframes menu-in {
+  0% { opacity: 0; transform: translateY(-6px) scaleY(.7); filter: drop-shadow(-6px 0 0 var(--pink)) drop-shadow(6px 0 0 var(--cyan)); }
+  60% { opacity: 1; filter: drop-shadow(-2px 0 0 var(--pink)) drop-shadow(2px 0 0 var(--cyan)); }
+  100% { transform: none; filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .6)); }
+}
+
+/* ── progress strip: slanted segments ────────────── */
+.pbar {
+  position: relative;
+  height: 9px;
+  width: 100%;
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+  background: repeating-linear-gradient(90deg, rgba(5, 217, 232, .18) 0 6px, transparent 6px 8px);
+}
+.pbar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: repeating-linear-gradient(90deg, var(--yellow) 0 6px, transparent 6px 8px);
+  transition: width .2s;
+}
+
+/* ── progress bar: slanted segmented strip, yellow fill with dispersion,
+      glowing leading edge, running glint, percent inside ── */
+.cprog {
+  --p: 0;
+  position: relative;
+  height: 15px;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  background:
+    linear-gradient(90deg, rgba(5, 217, 232, .1), rgba(255, 42, 109, .08)),
+    repeating-linear-gradient(90deg, rgba(5, 217, 232, .2) 0 8px, transparent 8px 11px);
+}
+.cprog .fill {
+  position: absolute;
+  inset: 2px auto 2px 0;
+  width: calc(var(--p) * 1%);
+  background: repeating-linear-gradient(90deg, var(--yellow) 0 8px, transparent 8px 11px);
+  filter: drop-shadow(-2px 0 0 var(--pink)) drop-shadow(2px 0 0 var(--cyan));
+  transition: width .3s ease-out;
+}
+.cprog .fill::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: -2px;
+  bottom: -2px;
+  width: 3px;
+  background: #fff;
+  box-shadow: 0 0 6px 2px var(--yellow);
+}
+.cprog.active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 0 40%, rgba(255, 255, 255, .45) 48%, transparent 56% 100%) no-repeat;
+  background-size: 40% 100%;
+  animation: scan 1.4s linear infinite;
+  pointer-events: none;
+}
+.cprog .pct {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font: 700 11px/1 var(--wide);
+  letter-spacing: .1em;
+  color: #fff;
+  text-shadow: -1px 0 var(--pink), 1px 0 var(--cyan), 0 0 3px #000, 0 0 3px #000;
+}
+.cprog.big { height: 24px; clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%); }
+.cprog.big .fill { inset: 3px auto 3px 0; background: repeating-linear-gradient(90deg, var(--yellow) 0 12px, transparent 12px 16px); }
+.cprog.big .pct { font-size: 14px; right: 20px; }
+.cprog.error .fill { background: repeating-linear-gradient(90deg, var(--pink) 0 12px, transparent 12px 16px); }
+@keyframes scan { 0% { background-position: -60% 0; } 100% { background-position: 160% 0; } }
+
+/* job stages: arrows OPEN ▸ CONVERT ▸ WRITE */
+.stages { display: flex; gap: 4px; margin-bottom: 12px; }
+.stage {
+  flex: 1;
+  position: relative;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: rgba(118, 133, 176, .28);
+  clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 50%, calc(100% - 13px) 100%, 0 100%, 13px 50%);
+  font: 700 12px/1 var(--wide);
+  letter-spacing: .22em;
+  color: var(--muted);
+}
+.stage:first-child { clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 50%, calc(100% - 13px) 100%, 0 100%); }
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  background: rgba(7, 9, 20, .95);
+  clip-path: inherit;
+}
+.stage > span { position: relative; z-index: 1; padding-left: 8px; }
+.stage.done { background: var(--cyan); color: var(--bg1); }
+.stage.done::before { background: var(--cyan); }
+.stage.active { background: var(--yellow); color: var(--yellow); }
+.stage.active::before { background: rgba(252, 238, 10, .12); }
+.stage.active > span { text-shadow: -1.5px 0 var(--pink), 1.5px 0 var(--cyan); animation: blink 1.1s steps(2) infinite; }
+.stage.failed { background: var(--pink); color: #fff; }
+.stage.failed::before { background: rgba(255, 42, 109, .3); }
+.proc-msg { margin-top: 12px; font: 600 12px/1.35 var(--wide); letter-spacing: .14em; color: var(--muted); white-space: normal; }
+.proc-msg.err { color: var(--pink); letter-spacing: .06em; }
+
+/* progress inside a list row */
+.rowprog { display: flex; align-items: center; gap: 7px; }
+.rowprog .pbar { flex: 1; }
+.rowprog b { font: 600 11px/1 var(--wide); color: var(--yellow); letter-spacing: .04em; min-width: 30px; text-align: right; }
+
+/* ── small list ──────────────────────────────────── */
+.mini { display: flex; flex-direction: column; gap: 3px; }
+.mini .opt {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(16px, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  height: 25px;
+  padding: 0 14px 0 10px;
+  background: rgba(16, 19, 42, .85);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+  font: 600 13px/1 var(--wide);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  cursor: pointer;
+}
+.mini .opt:hover { color: var(--text); background: rgba(5, 217, 232, .16); }
+.mini .opt.on { color: var(--bg1); background: var(--yellow); }
+.mini .opt.on .meter { background: rgba(10, 12, 27, .25); }
+.mini .opt.on .meter i { background: var(--bg1); }
+.mini .opt .rel { font-size: 11px; color: var(--pink); text-align: right; }
+.mini .opt .rel.alt { color: var(--cyan); }
+.mini .opt.on .rel { color: var(--bg1); }
+.mini .opt .val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.meter { height: 5px; background: rgba(118, 133, 176, .2); position: relative; clip-path: polygon(2px 0, 100% 0, calc(100% - 2px) 100%, 0 100%); }
+.meter i { position: absolute; inset: 0 auto 0 0; background: var(--cyan); }

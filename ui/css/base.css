@@ -1,0 +1,69 @@
+/* Colours, fonts, common rules. Palette: pink, cyan, yellow on dark blue. */
+@property --d {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 2px;
+}
+
+/* own font (tools/font): Latin, Cyrillic, equal-width digits, signs; anything missing comes from Bahnschrift */
+@font-face {
+  font-family: "VideoSqueeze";
+  src: url("../fonts/VideoSqueeze-Regular.ttf") format("truetype");
+  font-weight: 100 549;
+}
+@font-face {
+  font-family: "VideoSqueeze";
+  src: url("../fonts/VideoSqueeze-Bold.ttf") format("truetype");
+  font-weight: 550 900;
+}
+
+:root {
+  --yellow: #fcee0a;
+  --yellow-dim: rgba(252, 238, 10, .55);
+  --pink: #ff2a6d;
+  --pink-dim: rgba(255, 42, 109, .5);
+  --cyan: #05d9e8;
+  --cyan-dim: rgba(5, 217, 232, .42);
+  --blue: #2b45ff;
+  --bg0: #05060d;
+  --bg1: #0a0c1b;
+  --bg2: #10132a;
+  --bg3: #181c3c;
+  --text: #dff6ff;
+  --muted: #7685b0;
+  --faint: rgba(118, 133, 176, .32);
+  --font: "VideoSqueeze", "Bahnschrift SemiCondensed", "Segoe UI", sans-serif;
+  --wide: "VideoSqueeze", "Bahnschrift", "Segoe UI", sans-serif;
+  --mono: "Cascadia Mono", "Consolas", monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  /* opaque: the window region gives the shape, WebView2 transparency is not used */
+  background: var(--bg1);
+  color: var(--text);
+  font: 14px/1.25 var(--font);
+  letter-spacing: .03em;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+}
+
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; outline: none; }
+input { font: inherit; color: inherit; }
+canvas { display: block; }
+.num { font-variant-numeric: tabular-nums; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: rgba(5, 217, 232, .05); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--pink), var(--yellow));
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--yellow); border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-corner { background: transparent; }

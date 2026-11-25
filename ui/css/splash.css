@@ -1,0 +1,45 @@
+/* Splash: the same look as the main window — cut outline, neon edge, dispersed logo, start-up step log and
+   progress bar. */
+#frame.splash {
+  display: flex;
+  flex-direction: column;
+  padding: 30px 34px 26px 40px;
+}
+#frame.splash > * { pointer-events: none; }
+
+.sp-head { display: flex; align-items: center; gap: 18px; }
+.tb-logo.sp-chip { width: 84px; height: 50px; clip-path: polygon(16px 0, 100% 0, calc(100% - 16px) 100%, 0 100%); }
+.tb-logo.sp-chip svg { width: 48px; height: 32px; }
+.sp-titles { display: grid; gap: 6px; }
+.sp-name { font: 700 44px/1 var(--wide); letter-spacing: .14em; }
+.sp-sub { color: var(--cyan); font: 600 13px/1 var(--wide); letter-spacing: .38em; }
+.sp-deco { align-self: flex-start; height: 18px; margin-top: 6px; }
+
+.sp-log {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  margin: 18px 0 14px;
+  font: 600 12px/1 var(--wide);
+  letter-spacing: .2em;
+  color: var(--muted);
+}
+.sp-line { display: flex; align-items: center; gap: 10px; animation: line-in .25s ease-out; }
+.sp-line::before { content: ""; width: 7px; height: 7px; background: var(--cyan); transform: rotate(45deg); flex: none; }
+.sp-line .dots { flex: 1; height: 1px; background: repeating-linear-gradient(90deg, var(--faint) 0 3px, transparent 3px 6px); }
+.sp-line .st { color: var(--yellow); min-width: 28px; text-align: right; }
+.sp-line.active { color: var(--text); }
+.sp-line.active::before { background: var(--yellow); animation: blink .8s steps(2) infinite; }
+.sp-line.active .st { color: var(--pink); }
+@keyframes line-in { from { opacity: 0; transform: translateX(-10px); filter: drop-shadow(-4px 0 0 var(--pink)) drop-shadow(4px 0 0 var(--cyan)); } to { opacity: 1; transform: none; } }
+
+.sp-foot { display: grid; gap: 10px; }
+.sp-row { display: flex; align-items: baseline; gap: 14px; font: 600 12px/1 var(--wide); letter-spacing: .24em; }
+.sp-step { color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-pct { color: var(--yellow); font-size: 16px; letter-spacing: .06em; text-shadow: -1px 0 var(--pink), 1px 0 var(--cyan); }
+.sp-ver { color: var(--muted); letter-spacing: .16em; }
+
+body.ready .sp-step { color: var(--yellow); }
+body.ready .sp-name { animation: disp-burst .5s cubic-bezier(.2, .8, .2, 1); }

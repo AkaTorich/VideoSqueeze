@@ -1,0 +1,162 @@
+/* Custom-shaped window: the outline is the window region (js/shape.js), the frame paints the whole window opaque,
+   the neon edge runs inside the outline; title bar, window buttons, resize handles, status bar. */
+#frame {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 46px 56px minmax(0, 1fr) 30px;
+  background:
+    radial-gradient(ellipse 60% 50% at 85% 0%, rgba(255, 42, 109, .16), transparent 70%),
+    radial-gradient(ellipse 55% 60% at 0% 100%, rgba(5, 217, 232, .13), transparent 70%),
+    linear-gradient(rgba(5, 217, 232, .045) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, rgba(5, 217, 232, .045) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(180deg, #0c0f22 0%, #080a17 100%);
+}
+/* scan lines over everything */
+#frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .16) 0 1px, transparent 1px 3px);
+  z-index: 50;
+}
+
+#edge {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 60;
+  overflow: visible;
+}
+#edge polygon { fill: none; stroke-linejoin: miter; }
+#edge .e-glow { stroke: var(--yellow); stroke-width: 6; opacity: .16; filter: blur(4px); }
+#edge .e-p { stroke: var(--pink); stroke-width: 1.6; opacity: .85; mix-blend-mode: screen; animation: disp-l 5s ease-in-out infinite; }
+#edge .e-c { stroke: var(--cyan); stroke-width: 1.6; opacity: .85; mix-blend-mode: screen; animation: disp-r 5s ease-in-out infinite; }
+#edge .e-y { stroke: var(--yellow); stroke-width: 1.8; }
+#edge polyline { fill: none; stroke-linecap: square; }
+#edge .acc-p { stroke: var(--pink); stroke-width: 4; }
+#edge .acc-c { stroke: var(--cyan); stroke-width: 4; }
+#edge .acc-y { stroke: var(--yellow); stroke-width: 5; }
+@keyframes disp-l { 0%, 100% { transform: translateX(-1.6px); } 50% { transform: translateX(-2.8px) translateY(.6px); } }
+@keyframes disp-r { 0%, 100% { transform: translateX(1.6px); } 50% { transform: translateX(2.8px) translateY(-.6px); } }
+
+/* ── title bar ─────────────────────────────────────── */
+#titlebar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 10px 0 30px;
+  background: linear-gradient(90deg, rgba(252, 238, 10, .07), transparent 40%), rgba(5, 6, 14, .55);
+  border-bottom: 1px solid rgba(5, 217, 232, .22);
+}
+#titlebar > :not(.win-btns) { pointer-events: none; }
+.tb-logo {
+  width: 52px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  background: var(--yellow);
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+.tb-logo svg { width: 30px; height: 20px; overflow: visible; }
+.tb-logo polyline { fill: none; stroke: #0a0c1b; stroke-width: 2.4; stroke-linejoin: miter; stroke-linecap: square; }
+.tb-logo polygon { fill: #0a0c1b; stroke: none; }
+.tb-logo .lp { transform: translateX(-1.4px); }
+.tb-logo .lp polyline { stroke: var(--pink); }
+.tb-logo .lp polygon { fill: var(--pink); }
+.tb-logo .lc { transform: translateX(1.4px); }
+.tb-logo .lc polyline { stroke: #008a96; }
+.tb-logo .lc polygon { fill: #008a96; }
+.tb-title { display: flex; align-items: baseline; gap: 12px; white-space: nowrap; }
+.tb-title .disp { font: 700 22px/1 var(--wide); letter-spacing: .16em; }
+.tb-sub { color: var(--cyan); font-size: 12px; letter-spacing: .28em; }
+.tb-deco { flex: 1; display: flex; gap: 3px; height: 14px; align-items: stretch; justify-content: flex-end; padding-right: 10px; opacity: .55; }
+.tb-deco i { width: 3px; background: var(--cyan); }
+.tb-deco i:nth-child(3n) { width: 7px; background: var(--pink); }
+.tb-deco i:nth-child(4n) { width: 2px; background: var(--yellow); }
+.tb-deco i:nth-child(5n) { width: 10px; opacity: .5; }
+
+.win-btns { display: flex; gap: 4px; position: relative; z-index: 2; }
+.wbtn {
+  width: 46px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+  background: rgba(5, 217, 232, .1);
+  transition: background .12s;
+}
+.wbtn svg { width: 12px; height: 12px; overflow: visible; }
+.wbtn line, .wbtn rect, .wbtn polyline { stroke: var(--cyan); stroke-width: 1.6; fill: none; }
+.wbtn:hover { background: var(--cyan); }
+.wbtn:hover line, .wbtn:hover rect, .wbtn:hover polyline { stroke: var(--bg1); }
+.wbtn.max line, .wbtn.max rect, .wbtn.max polyline { stroke: var(--yellow); }
+.wbtn.max { background: rgba(252, 238, 10, .1); }
+.wbtn.max:hover { background: var(--yellow); }
+.wbtn.max:hover rect, .wbtn.max:hover polyline { stroke: var(--bg1); }
+.wbtn.close { background: rgba(255, 42, 109, .14); width: 54px; }
+.wbtn.close line { stroke: var(--pink); stroke-width: 1.9; }
+.wbtn.close:hover { background: var(--pink); filter: drop-shadow(-2px 0 0 var(--cyan)); }
+.wbtn.close:hover line { stroke: #fff; }
+.wbtn .restore { display: none; }
+body.maximized .wbtn .restore { display: block; }
+body.maximized .wbtn .enlarge { display: none; }
+
+/* ── status bar: goes around the outline notch (its edges — --notch-l / --notch-r from js/shape.js) ──
+   left of the notch — caption and progress up to the notch, nothing over the notch, right — percent and text */
+#statusbar {
+  --notch-pad: 20px;
+  display: flex;
+  align-items: center;
+  padding: 0 34px 0 0;
+  border-top: 1px solid rgba(5, 217, 232, .18);
+  background: rgba(5, 6, 14, .5);
+  font-size: 12px;
+  letter-spacing: .18em;
+  color: var(--muted);
+}
+.sb-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.sb-text b { color: var(--yellow); font-weight: 400; }
+.sb-text em { color: var(--pink); font-style: normal; }
+.sb-text i { color: var(--text); font-style: normal; letter-spacing: .06em; }
+.sb-cap { color: var(--cyan); font-weight: 600; flex: none; }
+.sb-left {
+  flex: none;
+  width: calc(var(--notch-l, 380px) - var(--notch-pad));
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-left: 40px;
+  min-width: 0;
+}
+.sb-left #sbProg { flex: 1; min-width: 40px; }
+.sb-notch { flex: none; width: calc(var(--notch-r, 620px) - var(--notch-l, 380px) + 2 * var(--notch-pad)); }
+.sb-pct { flex: none; min-width: 38px; margin-right: 14px; color: var(--yellow); font-weight: 700; letter-spacing: .06em; text-shadow: -1px 0 var(--pink), 1px 0 var(--cyan); }
+.sb-grow { flex: 1; }
+.grip {
+  width: 22px;
+  height: 22px;
+  margin-right: 6px;
+  cursor: nwse-resize;
+  background: repeating-linear-gradient(135deg, transparent 0 3px, var(--yellow) 3px 5px);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  opacity: .7;
+}
+.grip:hover { opacity: 1; }
+body.maximized .grip { visibility: hidden; }
+
+/* ── resize handles: strips along the outline edge, corners along the cuts ── */
+.rz { position: absolute; z-index: 70; }
+.rz.n { top: 0; left: 40px; right: 24px; height: 6px; cursor: ns-resize; }
+.rz.s { bottom: 0; left: 24px; right: 40px; height: 6px; cursor: ns-resize; }
+.rz.w { left: 0; top: 40px; bottom: 24px; width: 6px; cursor: ew-resize; }
+.rz.e { right: 0; top: 24px; bottom: 40px; width: 6px; cursor: ew-resize; }
+.rz.nw { left: 0; top: 0; width: 40px; height: 40px; cursor: nwse-resize; clip-path: polygon(0 28px, 28px 0, 40px 0, 0 40px); }
+.rz.ne { right: 0; top: 0; width: 24px; height: 24px; cursor: nesw-resize; clip-path: polygon(0 0, 12px 0, 100% 12px, 100% 100%); }
+.rz.sw { left: 0; bottom: 0; width: 24px; height: 24px; cursor: nesw-resize; clip-path: polygon(0 0, 0 12px, 12px 100%, 100% 100%); }
+.rz.se { right: 0; bottom: 0; width: 40px; height: 40px; cursor: nwse-resize; clip-path: polygon(100% 0, 100% 12px, 12px 100%, 0 100%); }
+body.maximized .rz { display: none; }

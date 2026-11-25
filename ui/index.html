@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VideoSqueeze — Video Compressor &amp; Converter</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/frame.css">
+<link rel="stylesheet" href="css/controls.css">
+<link rel="stylesheet" href="css/panels.css">
+<link rel="stylesheet" href="css/settings.css">
+<link rel="stylesheet" href="css/effects.css">
+</head>
+<body class="no-files">
+
+<div id="frame">
+  <header id="titlebar" data-tauri-drag-region>
+    <div class="tb-logo">
+      <svg viewBox="0 0 30 20"><g class="lp"><polyline points="2,5 7,10 2,15"/><polygon points="11,4 11,16 19,10"/><polyline points="28,5 23,10 28,15"/></g><g class="lc"><polyline points="2,5 7,10 2,15"/><polygon points="11,4 11,16 19,10"/><polyline points="28,5 23,10 28,15"/></g><g><polyline points="2,5 7,10 2,15"/><polygon points="11,4 11,16 19,10"/><polyline points="28,5 23,10 28,15"/></g></svg>
+    </div>
+    <div class="tb-title"><span class="disp idle" data-text="VIDEOSQUEEZE">VIDEOSQUEEZE</span><span class="tb-sub">// COMPRESS · CONVERT</span></div>
+    <div class="tb-deco"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="win-btns">
+      <button class="wbtn min" id="btnMin" title="Minimize"><svg viewBox="0 0 12 12"><line x1="1" y1="9" x2="11" y2="9"/></svg></button>
+      <button class="wbtn max" id="btnMax" title="Maximize"><svg viewBox="0 0 12 12"><rect class="enlarge" x="1.5" y="1.5" width="9" height="9"/><g class="restore"><rect x="1.5" y="4" width="6.5" height="6.5"/><polyline points="4,2 10,2 10,8"/></g></svg></button>
+      <button class="wbtn close" id="btnClose" title="Close"><svg viewBox="0 0 12 12"><line x1="1.5" y1="1.5" x2="10.5" y2="10.5"/><line x1="10.5" y1="1.5" x2="1.5" y2="10.5"/></svg></button>
+    </div>
+  </header>
+
+  <nav id="toolbar">
+    <button class="cbtn arrow y" id="btnFiles"><span>+ FILES</span></button>
+    <button class="cbtn arrow c" id="btnFolder"><span>+ FOLDER</span></button>
+    <div class="tb-sep"></div>
+    <button class="cbtn y" id="btnStart" disabled><span>START</span></button>
+    <button class="cbtn p" id="btnStop" disabled><span>STOP</span></button>
+    <button class="cbtn" id="btnClear" disabled><span>CLEAR</span></button>
+    <div class="grow"></div>
+    <span class="flabel">OUTPUT FORMAT</span>
+    <div id="selFormat"></div>
+  </nav>
+
+  <main id="main">
+    <section class="panel" id="listPanel">
+      <div class="pin">
+        <div class="subbar">
+          <div class="heading">FILES <span class="count" id="fileCount">0</span></div>
+          <div class="grow"></div>
+          <div class="totals" id="totals"></div>
+        </div>
+        <div class="list-head" id="listHead">
+          <span data-sort="num">#</span>
+          <span data-sort="name">FILE</span>
+          <span data-sort="video" class="h-video">VIDEO</span>
+          <span data-sort="time" class="h-time">LENGTH</span>
+          <span data-sort="size">SIZE</span>
+          <span data-sort="result">RESULT</span>
+          <span data-sort="status">STATUS</span>
+        </div>
+        <div id="fileList" role="listbox" tabindex="0" aria-label="Files"></div>
+        <div id="empty">
+          <div class="empty-box">
+            <div class="drop-arrow"></div>
+            <div class="disp idle" data-text="DROP VIDEOS HERE">DROP VIDEOS HERE</div>
+            <div class="formats">MP4 · MOV · MKV · WEBM · AVI · XVID · DIVX · 3GP</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel pink" id="side">
+      <div class="pin">
+        <div class="side-scroll">
+          <section class="settings" id="settings">
+            <div class="cap">SETTINGS</div>
+            <div class="srow" data-for="video"><span class="slabel">VIDEO</span><div id="selVideo"></div></div>
+            <div class="srow" data-for="size"><span class="slabel">SIZE BY</span><div id="selSize"></div></div>
+            <div class="srow" data-for="quality"><span class="slabel">QUALITY</span><div id="selQuality"></div></div>
+            <div class="srow" data-for="target"><span class="slabel">TARGET SIZE</span><span class="cfield wide"><input id="fTarget" type="number" min="0.1" step="1"></span><span class="unit">MB</span></div>
+            <div class="srow" data-for="bitrate"><span class="slabel">VIDEO BITRATE</span><span class="cfield wide"><input id="fBitrate" type="number" min="50" step="100"></span><span class="unit">KBIT/S</span></div>
+            <div class="srow" data-for="height"><span class="slabel">RESOLUTION</span><div id="selHeight"></div></div>
+            <div class="srow" data-for="fps"><span class="slabel">FRAME RATE</span><div id="selFps"></div></div>
+            <div class="srow" data-for="audio"><span class="slabel">AUDIO</span><div id="selAudio"></div></div>
+            <div class="srow" data-for="audioKbps"><span class="slabel">AUDIO BITRATE</span><div id="selAudioKbps"></div></div>
+            <div class="srow out"><span class="slabel">SAVE TO</span><div class="outpath" id="outPath"></div></div>
+            <div class="srow out-btns"><span class="slabel"></span><button class="cbtn sm c" id="btnOutChoose"><span>CHOOSE</span></button><button class="cbtn sm" id="btnOutSource"><span>NEXT TO SOURCE</span></button></div>
+            <div class="srow"><span class="slabel">NAME SUFFIX</span><span class="cfield text"><input id="fSuffix" type="text" maxlength="40" spellcheck="false"></span></div>
+          </section>
+
+          <section class="filebox" id="detail">
+            <div class="cap">SELECTED FILE</div>
+            <div class="d-empty"><div class="hex"></div><span>NO FILE SELECTED</span></div>
+            <div class="d-body">
+              <div class="d-head">
+                <span class="d-name" id="dName"></span>
+                <div class="d-path" id="dPath"></div>
+              </div>
+              <div class="d-readouts">
+                <div class="ro src">
+                  <div class="ro-cap">SOURCE</div>
+                  <div class="ro-val"><span class="disp" id="dSrc" data-text=""></span><span class="ro-unit" id="dSrcUnit"></span></div>
+                  <div class="ro-sub" id="dSrcSub"></div>
+                </div>
+                <div class="ro out">
+                  <div class="ro-cap" id="dOutCap">ESTIMATE</div>
+                  <div class="ro-val"><span class="disp pink" id="dOut" data-text=""></span><span class="ro-unit" id="dOutUnit"></span></div>
+                  <div class="ro-sub" id="dOutSub"></div>
+                </div>
+              </div>
+              <div class="ratio"><div class="ratio-bar"><i id="dRatioSrc"></i></div><div class="ratio-bar out"><i id="dRatioOut"></i></div><div class="ratio-txt" id="dRatioTxt"></div></div>
+              <div class="d-proc" id="dProc">
+                <div class="stages">
+                  <span class="stage" data-s="0"><span>OPEN</span></span>
+                  <span class="stage" data-s="1"><span>CONVERT</span></span>
+                  <span class="stage" data-s="2"><span>WRITE</span></span>
+                </div>
+                <div class="cprog big" id="dProg"><div class="fill"></div><span class="pct">0%</span></div>
+                <div class="proc-msg" id="dProcMsg"></div>
+              </div>
+              <div class="notes" id="dNotes"></div>
+              <dl class="meta" id="dMeta"></dl>
+              <div class="d-actions"><button class="cbtn sm y" id="btnReveal"><span>SHOW IN FOLDER</span></button></div>
+            </div>
+          </section>
+        </div>
+        <div class="prism" id="prism"></div>
+      </div>
+    </aside>
+  </main>
+
+  <footer id="statusbar">
+    <div class="sb-left">
+      <span class="sb-cap">PROCESS</span>
+      <div class="cprog" id="sbProg"><div class="fill"></div></div>
+    </div>
+    <div class="sb-notch"></div>
+    <span class="sb-pct" id="sbPct">0%</span>
+    <div class="sb-text" id="sbText"></div>
+    <div class="sb-grow"></div>
+    <div class="grip" id="grip"></div>
+  </footer>
+</div>
+
+<svg id="edge" aria-hidden="true">
+  <polygon class="e-glow"/>
+  <polygon class="e-p"/>
+  <polygon class="e-c"/>
+  <polygon class="e-y"/>
+  <polyline class="acc-p" id="accP"/>
+  <polyline class="acc-c" id="accC"/>
+  <polyline class="acc-y" id="accY"/>
+</svg>
+
+<div id="dropOverlay"><div class="drop-inner disp" data-text="RELEASE TO ADD">RELEASE TO ADD</div></div>
+
+<div class="rz n" data-dir="North"></div>
+<div class="rz s" data-dir="South"></div>
+<div class="rz w" data-dir="West"></div>
+<div class="rz e" data-dir="East"></div>
+<div class="rz nw" data-dir="NorthWest"></div>
+<div class="rz ne" data-dir="NorthEast"></div>
+<div class="rz sw" data-dir="SouthWest"></div>
+<div class="rz se" data-dir="SouthEast"></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+[package]
+name = "videosqueeze"
+version = "1.0.0"
+edition = "2021"
+description = "VideoSqueeze: video compressor and converter"
+
+[lib]
+name = "videosqueeze"
+path = "src/lib.rs"
+
+[[bin]]
+name = "VideoSqueeze"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+openh264 = "0.9"
+matroska-demuxer = "0.8"
+gif = "0.14"
+jpeg-decoder = "0.3"
+symphonia = { version = "0.5", default-features = false, features = ["mp1", "mp2", "mp3"] }
+rayon = "1"
+oxideav-mpeg4video = "0.1"
+oxideav-msmpeg4 = "0.0.11"
+oxideav-core = "0.1"
+fdk-aac-rs = "0.1"
+oxideav-ac3 = "0.0.12"
+
+[dev-dependencies]
+jpeg-encoder = "0.7"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_Graphics_Gdi"] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 4
+strip = true
+
+[profile.dev.package."*"]
+opt-level = 3

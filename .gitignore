@@ -1,0 +1,7 @@
+# Rust and Tauri build output (exe, installer) — rebuilt
+/target/
+# schemas Tauri generates on every build
+/gen/
+# Python tool caches
+__pycache__/
+*.pyc
