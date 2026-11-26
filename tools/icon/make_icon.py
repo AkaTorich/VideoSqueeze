@@ -148,7 +148,7 @@ def nsis_header():
 
 def main():
     sizes = [16, 20, 24, 32, 40, 48, 64, 128, 256]
-    images = {s: draw_icon(s) for s in sizes + [512]}
+    images = {s: draw_icon(s) for s in sizes + [512, 1024]}
     # sizes stored as classic BMP: every part of Windows reads them (shortcuts, taskbar, Explorer);
     # small PNG entries in .ico are ignored in places and a shortcut shows the default icon
     images[256].save(os.path.join(ICONS, "icon.ico"), sizes=[(s, s) for s in sizes],
@@ -157,6 +157,10 @@ def main():
     images[128].save(os.path.join(ICONS, "128x128.png"))
     images[256].save(os.path.join(ICONS, "128x128@2x.png"))
     images[512].save(os.path.join(ICONS, "icon.png"))
+    # Linux takes the PNG sizes, macOS the .icns (every size drawn at its own scale)
+    images[64].save(os.path.join(ICONS, "64x64.png"))
+    images[256].save(os.path.join(ICONS, "256x256.png"))
+    images[1024].save(os.path.join(ICONS, "icon.icns"), append_images=[images[s] for s in (16, 32, 64, 128, 256, 512)])
     nsis_sidebar()
     nsis_header()
     # sheet with every size for a look
