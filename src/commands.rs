@@ -145,21 +145,35 @@ fn collect(path: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
-/// Show a file selected in Explorer (or open a folder).
+/// Show a file selected in the file manager (Explorer, Finder) or, on Linux, open its folder.
 #[tauri::command]
 pub fn reveal_path(path: String) -> Result<(), String> {
     let p = Path::new(&path);
-    let mut cmd = std::process::Command::new("explorer.exe");
     #[cfg(windows)]
-    {
+    let mut cmd = {
         use std::os::windows::process::CommandExt;
+        let mut c = std::process::Command::new("explorer.exe");
         if p.is_file() {
-            cmd.raw_arg(format!("/select,\"{path}\""));
+            c.raw_arg(format!("/select,\"{path}\""));
         } else {
-            cmd.raw_arg(format!("\"{path}\""));
+            c.raw_arg(format!("\"{path}\""));
         }
-    }
-    #[cfg(not(windows))]
-    cmd.arg(p);
-    cmd.spawn().map(|_| ()).map_err(|e| format!("cannot open Explorer: {e}"))
+        c
+    };
+    #[cfg(target_os = "macos")]
+    let mut cmd = {
+        let mut c = std::process::Command::new("open");
+        if p.is_file() {
+            c.arg("-R");
+        }
+        c.arg(p);
+        c
+    };
+    #[cfg(all(unix, not(target_os = "macos")))]
+    let mut cmd = {
+        let mut c = std::process::Command::new("xdg-open");
+        c.arg(if p.is_file() { p.parent().unwrap_or(p) } else { p });
+        c
+    };
+    cmd.spawn().map(|_| ()).map_err(|e| format!("cannot open the file manager: {e}"))
 }

@@ -107,9 +107,16 @@ audio that a container can't hold is re-encoded to AAC.
 - `tools/check/` — window checks through WebView2's debug port (`run-debug.ps1`, `cdp.ps1`,
   `desktop-shot.ps1`, `region-info.ps1`, `shots.ps1`, `splash-shots.ps1`).
 
+## Download
+Ready builds are on the [Releases](https://github.com/AkaTorich/VideoSqueeze/releases) page:
+Windows (installer or portable exe), macOS (universal .dmg, Intel and Apple Silicon; not signed — right-click →
+Open the first time), Linux (.deb, .rpm, .AppImage). The custom window outline is cut on Windows; on macOS
+and Linux the window keeps the same look inside a rectangle.
+
 ## Build
 ```
 cargo tauri build
 ```
-Result: `target\release\VideoSqueeze.exe` and `target\release\bundle\nsis\VideoSqueeze_1.0.0_x64-setup.exe`.
-OpenH264 is compiled from its bundled C++ source (needs the MSVC build tools).
+Result on Windows: `target\release\VideoSqueeze.exe` and `target\release\bundle\nsis\VideoSqueeze_1.0.0_x64-setup.exe`.
+OpenH264 is compiled from its bundled C++ source (needs a C++ compiler: MSVC build tools, Xcode, or g++).
+Releases for all three systems are built by `.github/workflows/release.yml` when a `v*` tag is pushed.

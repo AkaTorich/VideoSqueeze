@@ -1,0 +1,98 @@
+# Builds VideoSqueeze for Windows, macOS and Linux on GitHub's machines and publishes a release.
+# Start: a tag like v1.0.0 (git tag v1.0.0 && git push origin v1.0.0) — the release with the files is created
+# after the builds. Manual run (Actions → Release → Run workflow) — builds only, files go to Artifacts.
+
+name: Release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: tauri-cli
+        run: cargo install tauri-cli --version "^2" --locked
+      - name: Build
+        run: cargo tauri build --bundles nsis
+      - name: Collect
+        shell: pwsh
+        run: |
+          $v = (Get-Content tauri.conf.json | ConvertFrom-Json).version
+          New-Item -ItemType Directory dist | Out-Null
+          Copy-Item "target/release/bundle/nsis/*-setup.exe" "dist/VideoSqueeze_${v}_windows_x64_setup.exe"
+          Copy-Item "target/release/VideoSqueeze.exe" "dist/VideoSqueeze_${v}_windows_x64_portable.exe"
+      - uses: actions/upload-artifact@v4
+        with: { name: windows, path: dist/* }
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+      - name: tauri-cli
+        run: cargo install tauri-cli --version "^2" --locked
+      - name: Build
+        run: cargo tauri build --target universal-apple-darwin --bundles dmg
+      - name: Collect
+        run: |
+          v=$(jq -r .version tauri.conf.json)
+          mkdir dist
+          cp target/universal-apple-darwin/release/bundle/dmg/*.dmg "dist/VideoSqueeze_${v}_macos_universal.dmg"
+      - uses: actions/upload-artifact@v4
+        with: { name: macos, path: dist/* }
+
+  linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: System libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev libfuse2 rpm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: tauri-cli
+        run: cargo install tauri-cli --version "^2" --locked
+      - name: Build
+        run: cargo tauri build --bundles deb,rpm,appimage
+      - name: Collect
+        run: |
+          v=$(jq -r .version tauri.conf.json)
+          mkdir dist
+          cp target/release/bundle/deb/*.deb "dist/VideoSqueeze_${v}_linux_amd64.deb"
+          cp target/release/bundle/rpm/*.rpm "dist/VideoSqueeze_${v}_linux_x86_64.rpm"
+          cp target/release/bundle/appimage/*.AppImage "dist/VideoSqueeze_${v}_linux_amd64.AppImage"
+      - uses: actions/upload-artifact@v4
+        with: { name: linux, path: dist/* }
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, macos, linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: dist, merge-multiple: true }
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls -l dist
+          gh release create "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --title "VideoSqueeze $GITHUB_REF_NAME" --notes "Video compressor and converter without FFmpeg: batch compression to H.264 (MP4, MKV, MOV, AVI), container change without re-encoding, GIF, audio extraction. Reads MP4, MOV, 3GP, MKV, WebM and AVI, including XviD, DivX and DivX 3.
+
+          - Windows 10/11: \`*_windows_x64_setup.exe\` (installer) or \`*_portable.exe\` (no install).
+          - macOS 11+: \`*_macos_universal.dmg\` (Intel and Apple Silicon). The app is not signed: right-click → Open the first time.
+          - Linux: \`.deb\` (Debian, Ubuntu), \`.rpm\` (Fedora, openSUSE) or \`.AppImage\` (any distribution)."
