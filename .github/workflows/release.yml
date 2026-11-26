@@ -18,7 +18,7 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: tauri-cli
@@ -32,13 +32,13 @@ jobs:
           New-Item -ItemType Directory dist | Out-Null
           Copy-Item "target/release/bundle/nsis/*-setup.exe" "dist/VideoSqueeze_${v}_windows_x64_setup.exe"
           Copy-Item "target/release/VideoSqueeze.exe" "dist/VideoSqueeze_${v}_windows_x64_portable.exe"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: windows, path: dist/* }
 
   macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-darwin, x86_64-apple-darwin
@@ -52,13 +52,13 @@ jobs:
           v=$(jq -r .version tauri.conf.json)
           mkdir dist
           cp target/universal-apple-darwin/release/bundle/dmg/*.dmg "dist/VideoSqueeze_${v}_macos_universal.dmg"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: macos, path: dist/* }
 
   linux:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: System libraries
         run: |
           sudo apt-get update
@@ -76,7 +76,7 @@ jobs:
           cp target/release/bundle/deb/*.deb "dist/VideoSqueeze_${v}_linux_amd64.deb"
           cp target/release/bundle/rpm/*.rpm "dist/VideoSqueeze_${v}_linux_x86_64.rpm"
           cp target/release/bundle/appimage/*.AppImage "dist/VideoSqueeze_${v}_linux_amd64.AppImage"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: linux, path: dist/* }
 
   release:
@@ -84,7 +84,7 @@ jobs:
     needs: [windows, macos, linux]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with: { path: dist, merge-multiple: true }
       - name: Publish
         env:
